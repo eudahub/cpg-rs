@@ -10,3 +10,7 @@ name = "cpg"
 
 [lints.rust]
 unsafe_code = "forbid"
+
+[dependencies]
+miniz_oxide = "0.9.1"
+unicode-general-category = "1.1.0"

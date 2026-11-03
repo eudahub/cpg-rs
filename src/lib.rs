@@ -1,9 +1,13 @@
-//! Code pages, and turning text in them into UTF-8.
+//! Code pages, turning text in them into UTF-8, and finding which one a text is in.
 
+mod detect;
+mod languages;
 mod polish;
 mod tables;
 
 use std::fmt;
+
+pub use detect::{Detection, Detector};
 
 /// A code page, found with [`by_name`].
 #[derive(Debug)]
@@ -70,6 +74,14 @@ impl Codepage {
         });
         debug_assert!(result.is_ok());
         LossyText { utf8, replaced }
+    }
+
+    /// Decodes bytes, leaving out what is invalid.
+    fn without_invalid(&self, bytes: &[u8]) -> String {
+        let mut text = String::with_capacity(bytes.len());
+        let result = self.decode(bytes, &mut text, |_, _| Ok(()));
+        debug_assert!(result.is_ok());
+        text
     }
 
     /// Adds the decoded bytes to `text`, and asks `invalid` what to do at those that are not.
